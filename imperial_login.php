@@ -1,5 +1,5 @@
 <?php
-	/* 
+    /* 
     Plugin Name: Imperial College User Login
     Plugin URI: http://www.union.ic.ac.uk
     Description: Plugin to allow current and past members of the Imperial College Union to login into wordpress
@@ -9,7 +9,7 @@
 	License: GPL2
 	
 		Copyright 2011 Jason Ye (email : jason.ye@me.com)
-					2011 Jonathan Kim
+			  2011 Jonathan Kim (email : jkimbo@gmail.com)
 
 	    This program is free software; you can redistribute it and/or modify
 	    it under the terms of the GNU General Public License, version 2, as 

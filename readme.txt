@@ -3,6 +3,30 @@ Author: J. Kim
 
 Plugin to allow members of the Imperial College Union to login into wordpress
 
+    Plugin Name: Imperial College User Login
+    Plugin URI: http://www.union.ic.ac.uk
+    Description: Plugin to allow current and past members of the Imperial College Union to login into wordpress
+    Author: Jonathan Kim, Jason Ye
+    Version: 0.2
+    Author URI: http://www.jkimbo.com
+	License: GPL2
+	
+		Copyright 2011 Jason Ye (email : jason.ye@me.com)
+			  2011 Jonathan Kim (email : jkimbo@gmail.com)
+
+	    This program is free software; you can redistribute it and/or modify
+	    it under the terms of the GNU General Public License, version 2, as 
+	    published by the Free Software Foundation.
+
+	    This program is distributed in the hope that it will be useful,
+	    but WITHOUT ANY WARRANTY; without even the implied warranty of
+	    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+	    GNU General Public License for more details.
+
+	    You should have received a copy of the GNU General Public License
+	    along with this program; if not, write to the Free Software
+	    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
 ==Notes==
 
 Add "imperial_login_form()" (with php tags around it) to the part of your page that you want to display the login form. 
