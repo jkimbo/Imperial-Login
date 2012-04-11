@@ -29,6 +29,7 @@ Plugin to allow members of the Imperial College Union to login into wordpress
 
 ==Notes==
 
+You need to add `define('FORCE_SSL_LOGIN', true);` to wp-config for pam_auth to work
 Add "imperial_login_form()" (with php tags around it) to the part of your page that you want to display the login form. 
 It will then display a simple username and password form that sends the information (over ssl) to a login file that does the following: 
 	Checks whether user is already a member of the wordpress site - logs user in if true and redirects to referal site
