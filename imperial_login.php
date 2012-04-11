@@ -26,7 +26,8 @@
     */  
 	
     /*
-     * Get login form
+     * Get login box
+     * If logged in the display logged in message. Else show login form 
      *
      * Returns string
      */
@@ -57,7 +58,7 @@
      */
 	function login_form($wp_content_url) {
         ob_start(); ?>
-            <form action="<?php echo $wp_content_url;?>/wp-content/plugins/imperial_login/secure_login.php" method="POST">
+            <form action="<?php echo site_url('wp-login.php', 'login_post') ?>" method="post">
                 <table>
                     <tr>
                         <td>
@@ -73,6 +74,14 @@
                         </td>
                         <td>
                             <input type="password" name="pwd" id="imp_pass" class="required"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label id="rememberme">
+                                <input name="rememberme" type="checkbox" value="forever" tabindex="90"<?php checked( $rememberme ); ?> />
+                                Remember Me
+                            </label>
                         </td>
                     </tr>
                     <tr>
@@ -171,4 +180,126 @@
 	
 	// register imperial_login widget
 	add_action('widgets_init', create_function('', 'return register_widget("Imperial_Login");'));
+
+    /*
+     * Authentication filter
+     * Override default authentication with Imperial College method
+     */
+    add_filter( 'authenticate', 'imperial_authenticate', 10, 3 );
+
+    function imperial_authenticate($user, $username, $password) {
+        if ( is_a($user, 'WP_User') ) { return $user; }
+
+        if ( empty($username) || empty($password) ) {
+            $error = new WP_Error();
+
+            if ( empty($username) )
+                $error->add('empty_username', __('<strong>ERROR</strong>: The username field is empty.'));
+
+            if ( empty($password) )
+                $error->add('empty_password', __('<strong>ERROR</strong>: The password field is empty.'));
+
+            return $error;
+        }
+
+
+        /*
+         * Case 1: User authenticates with IC
+         *      -> if user is already in database then load user from database and return user
+         *      -> else register user with secure random password (username + department + salt) and then return user
+         *
+         * Case 2: User doesn't authenticate with IC
+         *      -> see if user is in database and if is try and authenticate normally
+         */
+        if(pam_auth($username, $password)) { // if user auths with IC
+            if(username_exists($username)) { // user is already in WP
+                $userdata = get_user_by('login', $username);
+            } else { // user isn't in WP so create new user
+                $pass = generate_password();
+                $userid = create_imp_user($username, $pass);
+                $userdata = get_user_by('id', $userid);
+            }
+            $user = new WP_User($userdata->ID);
+        } else { // if failed login with IC
+            $userdata = get_user_by('login', $username);
+
+            if ( !$userdata )
+                return new WP_Error('invalid_username', sprintf(__('<strong>ERROR</strong>: Invalid username. <a href="%s" title="Password Lost and Found">Lost your password</a>?'), site_url('wp-login.php?action=lostpassword', 'login')));
+
+            $userdata = apply_filters('wp_authenticate_user', $userdata, $password);
+            if ( is_wp_error($userdata) )
+                return $userdata;
+
+            if ( !wp_check_password($password, $userdata->user_pass, $userdata->ID) )
+                return new WP_Error( 'incorrect_password', sprintf( __( '<strong>ERROR</strong>: The password you entered for the username <strong>%1$s</strong> is incorrect. <a href="%2$s" title="Password Lost and Found">Lost your password</a>?' ),
+                $username, site_url( 'wp-login.php?action=lostpassword', 'login' ) ) );
+
+            $user =  new WP_User($userdata->ID);
+        }
+
+        return $user;
+    }
+
+    if(!function_exists('pam_auth')) {
+        function pam_auth($user, $pass) {
+            return true;
+        }
+    }
+
+	/*
+	 * Creates a new user in wp_users table with given login credentials
+	 * @param 
+	 * user: the username to be created
+	 * pass: the password to be associated with account
+	 * @return
+	 * user_id of created user
+	 */
+	function create_imp_user($user, $pass) {
+		$user_login = esc_sql($user);
+		$user_email = $user."@imperial.ac.uk";
+		$user_pass = $pass;
+		$fullname = ldap_get_name($user);
+		$fullname = explode(' ', $fullname);
+		$first_name = $fullname[0];
+		$last_name = end($fullname);
+		$user_id = $user_email;
+		$description = ldap_get_info($user);
+		$description = format_description($description);
+		//$description = implode(",", $description);
+		$userdata = compact('user_login', 'user_email', 'user_pass', 'first_name', 'last_name', 'description');
+		$user_id = wp_insert_user($userdata);
+		
+		return $user_id;
+	}
+
+	/*
+	 * Helper function to parse the description array obtained via ldap
+	 * @param 
+	 * description: an array obtained through ldap_get_info() function
+	 * @return
+	 * string detailing the course details of person
+	 */
+	function format_description($description) {
+		$course = $description[0];
+		$student_type = $description[1];
+		$department = $description[2];
+		$degree = $description[3];
+		$location = $description[4];
+		
+		$return_description = $course . "\n" . $student_type . "\n" . $department;
+		return $return_description;
+	}
+
+    /*
+     * Generate a secure password
+     * Because we are not allowed to store users passwords in database we create a random one to store instead
+     *
+     * Returns string
+     */
+    function generate_password($username) {
+        $info = ldap_get_info($username);
+        $plain = $user+$info[2]+wp_salt();
+        $hash = wp_hash_password($username);
+        return $hash;
+    }
 ?>
