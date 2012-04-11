@@ -5,7 +5,7 @@
     Description: Plugin to allow current and past members of the Imperial College Union to login into wordpress
     Author: Jonathan Kim, Jason Ye
     Version: 0.2
-    Author URI: http://www.jkimbo.com
+    Author URI: http://jkimbo.com
 	License: GPL2
 	
 		Copyright 2011 Jason Ye (email : jason.ye@me.com)
