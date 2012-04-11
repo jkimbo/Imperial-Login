@@ -25,67 +25,110 @@
 	    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     */  
 	
+    /*
+     * Get login form
+     *
+     * Returns string
+     */
 	function imperial_login_form() {
-		
-		//$login_form = "Hello World";
-		if (is_user_logged_in()) { 
+		if (is_user_logged_in()) {  // if logged in the just show logged in message
 			$login_form = logged_in_message();
-		} else {
+		} else { // else show login form
 			$wp_content_url = str_replace( 'http://' , 'https://' , get_option( 'siteurl' ) );
 			$login_form = '<div id="imperial_login_form">';
-			if($_GET['case']==2){ //password changed
+			if($_GET['case']==2){ //password changed TODO: remove
 				// invite users to relogin due to updating of password not committing til finishing of execution of secure_login.php
 				$login_form .='<span id ="login_error">Your IC password has changed since your last visit to the ICHC website. <b>Please login with your new IC login credentials.</b></span>';				
-			} else if ($_GET['login'] == error) {
+			} else if ($_GET['login'] == error) { // login error
 				$login_form .= '<span id="login_error">Woops! Wrong username or password!</span>';
 			}
-			$login_form = append_login_form($login_form, $wp_content_url);
+			$login_form .= login_form($wp_content_url); // get login form
+            $login_form .= '</div>';
 		}
-		echo $login_form;
-	}
-
-	function append_login_form($login_form, $wp_content_url) {
-	
-		$login_form .= '<form action="'.$wp_content_url.'/wp-content/plugins/imperial_login/secure_login.php" method="POST">';
-		$login_form .= '<table><tr>';
-		$login_form .= '<td><label for="log" id="imp_name_label">IC Username: </label></td><td><input type="text" name="log" id="imp_name" class="required" minlength="4"/></td>';
-		$login_form .= '</tr><tr>';
-		$login_form .= '<td><label for="pwd" id="imp_pass_label">Password: </label></td><td><input type="password" name="pwd" id="imp_pass" class="required"/></td>';
-		$login_form .= '</tr><tr>';
-		//$login_form .= '<td><a target="_blank" href="http://www3.imperial.ac.uk/ict/services/securitynetworkdatacentreandtelephonyservices/security/securitypolicies/passwords/changingyourpassword">Forgotten password?</a></td>';
-		$login_form .= '<td colspan=2><input type="submit" value="Login" id="imp_login_submit"/></td>';
-		$login_form .= '</tr></table></form>';
-		$login_form .= '</div>';
-		
 		return $login_form;
 	}
+
+    /*
+     * Generate login form
+     *
+     * $wp_content_url - site url (https)
+     *
+     * Returns string
+     */
+	function login_form($wp_content_url) {
+        ob_start(); ?>
+            <form action="<?php echo $wp_content_url;?>/wp-content/plugins/imperial_login/secure_login.php" method="POST">
+                <table>
+                    <tr>
+                        <td>
+                            <label for="log" id="imp_name_label">IC Username: </label>
+                        </td>
+                        <td>
+                            <input type="text" name="log" id="imp_name" class="required" minlength="4"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <label for="pwd" id="imp_pass_label">Password: </label>
+                        </td>
+                        <td>
+                            <input type="password" name="pwd" id="imp_pass" class="required"/>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td colspan=2>
+                            <input type="submit" value="Login" id="imp_login_submit"/>
+                        </td>
+                    </tr>
+                </table>
+            </form>
+        <?php 
+        $form = ob_get_contents();
+        $ob_end_clean();
+		
+		return $form;
+	}
 	
+    /*
+     * Generate logged in message
+     *
+     * Returns string
+     */
 	function logged_in_message() {
 		global $current_user;
 		get_currentuserinfo(); 
-		$login_form = '<div id="userDetails"><a href="'.get_bloginfo('url').'/author/'.$current_user->user_login.'">';
-		if ($current_user->user_firstname != "") {
-			$login_form .= $current_user->user_firstname." ".$current_user->user_lastname; 
-		} else { 
-			$login_form .= $current_user->user_login;
-		} 
-		$login_form .= '</a>';
-		$login_form .= ' <a href="'.esc_url(wp_logout_url($_SERVER['REQUEST_URI'])).'">Logout</a></div>';
-		
-		// If user can add posts
-		if (current_user_can( 'publish_posts')){
-			$login_form .= '<div> <a href="'.get_bloginfo('url').'/wp-admin" >Admin</a> </div>';
-		}
-		return $login_form;
+        ob_start(); ?>
+            <div id="userDetails">
+                <a href="<?php echo get_bloginfo('url'); ?>/author/<?php echo $current_user->user_login; ?>"><?php 
+                    if ($current_user->user_firstname != "") {
+                        echo $current_user->user_firstname." ".$current_user->user_lastname; 
+                    } else { 
+                        echo $current_user->user_login;
+                    } 
+                ?></a> <a href="<?php echo esc_url(wp_logout_url($_SERVER['REQUEST_URI'])); ?>">Logout</a>
+            </div>
+            
+            <?php
+                // If user can add posts
+                if (current_user_can( 'publish_posts')){ ?>
+                    <div>
+                        <a href="<?php echo get_bloginfo('url'); ?>/wp-admin">Admin</a>
+                    </div>
+            <?php } ?>
+        <?php
+        $message = ob_get_contents();
+        ob_end_clean();
+
+		return $message;
 	}
 	
 	
-	/**
-	* imperial_login Class
-	*/
-	class imperial_login extends WP_Widget {
+	/*
+	 * Imperial_Login Class
+	 */
+	class Imperial_Login extends WP_Widget {
 		/** constructor */
-		function imperial_login() {
+		function __construct() {
 			parent::WP_Widget(false, $name = 'Imperial Login');	
 		}
 
@@ -94,17 +137,17 @@
 			extract( $args );
 			$title = apply_filters('widget_title', $instance['title']);
 			$logintitle = apply_filters('widget_login_title', $instance['logintitle']);
-				
-				echo $before_widget; 
-				if (!is_user_logged_in()) {
-					if ( $title )
-						echo $before_title . $title . $after_title;
-				} else {
-					if ( $logintitle )
-						echo $before_title . $logintitle . $after_title;
-				}
-				imperial_login_form();
-				echo $after_widget;
+
+            echo $before_widget; 
+            if (!is_user_logged_in()) {
+                if ( $title )
+                    echo $before_title . $title . $after_title;
+            } else {
+                if ( $logintitle )
+                    echo $before_title . $logintitle . $after_title;
+            }
+            echo imperial_login_form();
+            echo $after_widget;
 		}
 
 		/** @see WP_Widget::update */
@@ -124,9 +167,8 @@
 				<p><label for="<?php echo $this->get_field_id('logintitle'); ?>"><?php _e('Logged in Title:'); ?> <input class="widefat" id="<?php echo $this->get_field_id('logintitle'); ?>" name="<?php echo $this->get_field_name('logintitle'); ?>" type="text" value="<?php echo $logintitle; ?>" /></label></p>
 			<?php 
 		}
-
 	} // class imperial_login
 	
 	// register imperial_login widget
-	add_action('widgets_init', create_function('', 'return register_widget("imperial_login");'));
+	add_action('widgets_init', create_function('', 'return register_widget("Imperial_Login");'));
 ?>
