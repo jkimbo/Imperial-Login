@@ -240,12 +240,6 @@
         return $user;
     }
 
-    if(!function_exists('pam_auth')) {
-        function pam_auth($user, $pass) {
-            return true;
-        }
-    }
-
 	/*
 	 * Creates a new user in wp_users table with given login credentials
 	 * @param 
@@ -271,6 +265,34 @@
 		
 		return $user_id;
 	}
+
+    /*
+     * Stub functions for local development
+     */
+    if(!function_exists('pam_auth')) {
+        function pam_auth($user, $pass) {
+            return true;
+        }
+    }
+
+    if(!function_exists('ldap_get_name')) {
+        function ldap_get_name($user) {
+            return $user;
+        }
+    }
+
+    if(!function_exists('ldap_get_info')) {
+        function ldap_get_info($user) {
+            $info = array(
+                'Rector', 
+                'Bossman',
+                'Ivory Tower',
+                'Playgroup',
+                'Ball Pit'
+            );
+            return $info;
+        }
+    }
 
 	/*
 	 * Helper function to parse the description array obtained via ldap
