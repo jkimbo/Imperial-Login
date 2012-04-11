@@ -224,7 +224,7 @@
             $userdata = get_user_by('login', $username);
 
             if ( !$userdata )
-                return new WP_Error('invalid_username', sprintf(__('<strong>ERROR</strong>: Invalid username. <a href="%s" title="Password Lost and Found">Lost your password</a>?'), site_url('wp-login.php?action=lostpassword', 'login')));
+                return new WP_Error('invalid_username', sprintf(__('<strong>ERROR</strong>: Invalid username or password. Please try again.'), site_url('wp-login.php', 'login')));
 
             $userdata = apply_filters('wp_authenticate_user', $userdata, $password);
             if ( is_wp_error($userdata) )
