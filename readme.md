@@ -2,7 +2,7 @@
 
 *Author: Jonathan Kim and Jason Ye*
 
-## Plugin to allow members of the Imperial College Union to login into wordpress
+### Plugin to allow members of the Imperial College Union to login into wordpress
 
     Plugin Name: Imperial College User Login
     Plugin URI: http://www.union.ic.ac.uk
