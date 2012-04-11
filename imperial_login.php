@@ -33,7 +33,7 @@
      */
 	function imperial_login_form() {
 		if (is_user_logged_in()) {  // if logged in the just show logged in message
-			$login_form = logged_in_message();
+			$login_form = gen_imperial_logged_in_message();
 		} else { // else show login form
 			$wp_content_url = str_replace( 'http://' , 'https://' , get_option( 'siteurl' ) );
 			$login_form = '<div id="imperial_login_form">';
@@ -43,7 +43,7 @@
 			} else if ($_GET['login'] == error) { // login error
 				$login_form .= '<span id="login_error">Woops! Wrong username or password!</span>';
 			}
-			$login_form .= login_form($wp_content_url); // get login form
+			$login_form .= gen_imperial_login_form($wp_content_url); // get login form
             $login_form .= '</div>';
 		}
 		return $login_form;
@@ -51,12 +51,13 @@
 
     /*
      * Generate login form
+     * Just a generic login form that posts to /wp-login
      *
      * $wp_content_url - site url (https)
      *
      * Returns string
      */
-	function login_form($wp_content_url) {
+	function gen_imperial_login_form($wp_content_url) {
         ob_start(); ?>
             <form action="<?php echo site_url('wp-login.php', 'login_post') ?>" method="post">
                 <table>
@@ -103,7 +104,7 @@
      *
      * Returns string
      */
-	function logged_in_message() {
+	function gen_imperial_logged_in_message() {
 		global $current_user;
 		get_currentuserinfo(); 
         ob_start(); ?>
@@ -215,7 +216,7 @@
             if(username_exists($username)) { // user is already in WP
                 $userdata = get_user_by('login', $username);
             } else { // user isn't in WP so create new user
-                $pass = generate_password();
+                $pass = imperial_generate_password();
                 $userid = create_imp_user($username, $pass);
                 $userdata = get_user_by('id', $userid);
             }
@@ -301,7 +302,7 @@
 	 * @return
 	 * string detailing the course details of person
 	 */
-	function format_description($description) {
+	function imperial_format_description($description) {
 		$course = $description[0];
 		$student_type = $description[1];
 		$department = $description[2];
@@ -318,7 +319,7 @@
      *
      * Returns string
      */
-    function generate_password($username) {
+    function imperial_generate_password($username) {
         $info = ldap_get_info($username);
         $plain = $user+$info[2]+wp_salt();
         $hash = wp_hash_password($username);
