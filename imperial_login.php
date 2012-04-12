@@ -216,7 +216,7 @@
             if(username_exists($username)) { // user is already in WP
                 $userdata = get_user_by('login', $username);
             } else { // user isn't in WP so create new user
-                $pass = imperial_generate_password();
+                $pass = imperial_generate_password($username);
                 $userid = create_imp_user($username, $pass);
                 $userdata = get_user_by('id', $userid);
             }
@@ -259,7 +259,7 @@
 		$last_name = end($fullname);
 		$user_id = $user_email;
 		$description = ldap_get_info($user);
-		$description = format_description($description);
+		$description = imperial_format_description($description);
 		//$description = implode(",", $description);
 		$userdata = compact('user_login', 'user_email', 'user_pass', 'first_name', 'last_name', 'description');
 		$user_id = wp_insert_user($userdata);
