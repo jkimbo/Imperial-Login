@@ -109,20 +109,28 @@
 		get_currentuserinfo(); 
         ob_start(); ?>
             <div id="userDetails">
-                <a href="<?php echo get_bloginfo('url'); ?>/author/<?php echo $current_user->user_login; ?>"><?php 
-                    if ($current_user->user_firstname != "") {
-                        echo $current_user->user_firstname." ".$current_user->user_lastname; 
+                <?php
+                    /*
+                     * If using a author page use the following link
+                     */
+                    if(locate_template('author.php') != '') { 
+                        echo '<a href="'.get_bloginfo('url').'/author/'.$current_user->user_login.'">';
                     } else { 
-                        echo $current_user->user_login;
-                    } 
-                ?></a> <a href="<?php echo esc_url(wp_logout_url($_SERVER['REQUEST_URI'])); ?>">Logout</a>
+                        echo '<a href="'.admin_url('profile.php').'">';
+                    }
+                        if ($current_user->user_firstname != "") {
+                            echo $current_user->user_firstname." ".$current_user->user_lastname; 
+                        } else { 
+                            echo $current_user->user_login;
+                        } 
+                    ?></a> <a href="<?php echo esc_url(wp_logout_url($_SERVER['REQUEST_URI'])); ?>">Logout</a>
             </div>
             
             <?php
                 // If user can add posts
                 if (current_user_can( 'publish_posts')){ ?>
                     <div>
-                        <a href="<?php echo get_bloginfo('url'); ?>/wp-admin">Admin</a>
+                        <a href="<?php echo admin_url(); ?>">Admin</a>
                     </div>
             <?php } ?>
         <?php
