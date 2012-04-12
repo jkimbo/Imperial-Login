@@ -254,12 +254,15 @@
 		$user_email = $user."@imperial.ac.uk";
 		$user_pass = $pass;
 		$fullname = ldap_get_name($user);
+        $user_nicename = $fullname;
+        $display_name = $fullname;
+        $nickname = $fullname;
 		$fullname = explode(' ', $fullname);
 		$first_name = $fullname[0];
 		$last_name = end($fullname);
 		$description = ldap_get_info($user);
 		$description = imperial_format_description($description);
-		$userdata = compact('user_login', 'user_email', 'user_pass', 'first_name', 'last_name', 'description');
+		$userdata = compact('user_login', 'user_email', 'user_pass', 'user_nicename', 'display_name', 'nickname', 'first_name', 'last_name', 'description');
 		$user_id = wp_insert_user($userdata);
 		
 		return $user_id;
@@ -276,7 +279,7 @@
 
     if(!function_exists('ldap_get_name')) {
         function ldap_get_name($user) {
-            return $user;
+            return "Keith O'Nions";
         }
     }
 
