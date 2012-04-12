@@ -257,10 +257,8 @@
 		$fullname = explode(' ', $fullname);
 		$first_name = $fullname[0];
 		$last_name = end($fullname);
-		$user_id = $user_email;
 		$description = ldap_get_info($user);
 		$description = imperial_format_description($description);
-		//$description = implode(",", $description);
 		$userdata = compact('user_login', 'user_email', 'user_pass', 'first_name', 'last_name', 'description');
 		$user_id = wp_insert_user($userdata);
 		
