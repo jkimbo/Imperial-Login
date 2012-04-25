@@ -6,48 +6,48 @@
     Author: Jonathan Kim, Jason Ye
     Version: 0.2
     Author URI: http://jkimbo.com
-	License: GPL2
-	
-		Copyright 2011 Jason Ye (email : jason.ye@me.com)
-			  2011 Jonathan Kim (email : jkimbo@gmail.com)
+    License: GPL2
+    
+        Copyright 2011 Jason Ye (email : jason.ye@me.com)
+              2011 Jonathan Kim (email : jkimbo@gmail.com)
 
-	    This program is free software; you can redistribute it and/or modify
-	    it under the terms of the GNU General Public License, version 2, as 
-	    published by the Free Software Foundation.
+        This program is free software; you can redistribute it and/or modify
+        it under the terms of the GNU General Public License, version 2, as 
+        published by the Free Software Foundation.
 
-	    This program is distributed in the hope that it will be useful,
-	    but WITHOUT ANY WARRANTY; without even the implied warranty of
-	    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	    GNU General Public License for more details.
+        This program is distributed in the hope that it will be useful,
+        but WITHOUT ANY WARRANTY; without even the implied warranty of
+        MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+        GNU General Public License for more details.
 
-	    You should have received a copy of the GNU General Public License
-	    along with this program; if not, write to the Free Software
-	    Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+        You should have received a copy of the GNU General Public License
+        along with this program; if not, write to the Free Software
+        Foundation, Inc., 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
     */  
-	
+    
     /*
      * Get login box
      * If logged in the display logged in message. Else show login form 
      *
      * Returns string
      */
-	function imperial_login_form() {
-		if (is_user_logged_in()) {  // if logged in the just show logged in message
-			$login_form = gen_imperial_logged_in_message();
-		} else { // else show login form
-			$wp_content_url = str_replace( 'http://' , 'https://' , get_option( 'siteurl' ) );
-			$login_form = '<div id="imperial_login_form">';
-			if($_GET['case']==2){ //password changed TODO: remove
-				// invite users to relogin due to updating of password not committing til finishing of execution of secure_login.php
-				$login_form .='<span id ="login_error">Your IC password has changed since your last visit to the ICHC website. <b>Please login with your new IC login credentials.</b></span>';				
-			} else if ($_GET['login'] == error) { // login error
-				$login_form .= '<span id="login_error">Woops! Wrong username or password!</span>';
-			}
-			$login_form .= gen_imperial_login_form($wp_content_url); // get login form
+    function imperial_login_form() {
+        if (is_user_logged_in()) {  // if logged in the just show logged in message
+            $login_form = gen_imperial_logged_in_message();
+        } else { // else show login form
+            $wp_content_url = str_replace( 'http://' , 'https://' , get_option( 'siteurl' ) );
+            $login_form = '<div id="imperial_login_form">';
+            if($_GET['case']==2){ //password changed TODO: remove
+                // invite users to relogin due to updating of password not committing til finishing of execution of secure_login.php
+                $login_form .='<span id ="login_error">Your IC password has changed since your last visit to the ICHC website. <b>Please login with your new IC login credentials.</b></span>';             
+            } else if ($_GET['login'] == error) { // login error
+                $login_form .= '<span id="login_error">Woops! Wrong username or password!</span>';
+            }
+            $login_form .= gen_imperial_login_form($wp_content_url); // get login form
             $login_form .= '</div>';
-		}
-		return $login_form;
-	}
+        }
+        return $login_form;
+    }
 
     /*
      * Generate login form
@@ -57,7 +57,7 @@
      *
      * Returns string
      */
-	function gen_imperial_login_form($wp_content_url) {
+    function gen_imperial_login_form($wp_content_url) {
         ob_start(); ?>
             <form action="<?php echo site_url('wp-login.php', 'login_post') ?>" method="post">
                 <table>
@@ -95,18 +95,18 @@
         <?php 
         $form = ob_get_contents();
         ob_end_clean();
-		
-		return $form;
-	}
-	
+        
+        return $form;
+    }
+    
     /*
      * Generate logged in message
      *
      * Returns string
      */
-	function gen_imperial_logged_in_message() {
-		global $current_user;
-		get_currentuserinfo(); 
+    function gen_imperial_logged_in_message() {
+        global $current_user;
+        get_currentuserinfo(); 
         ob_start(); ?>
             <div id="userDetails">
                 <?php
@@ -137,24 +137,24 @@
         $message = ob_get_contents();
         ob_end_clean();
 
-		return $message;
-	}
-	
-	
-	/*
-	 * Imperial_Login Class
-	 */
-	class Imperial_Login extends WP_Widget {
-		/** constructor */
-		function __construct() {
-			parent::WP_Widget(false, $name = 'Imperial Login');	
-		}
+        return $message;
+    }
+    
+    
+    /*
+     * Imperial_Login Class
+     */
+    class Imperial_Login extends WP_Widget {
+        /** constructor */
+        function __construct() {
+            parent::WP_Widget(false, $name = 'Imperial Login'); 
+        }
 
-		/** @see WP_Widget::widget */
-		function widget($args, $instance) {		
-			extract( $args );
-			$title = apply_filters('widget_title', $instance['title']);
-			$logintitle = apply_filters('widget_login_title', $instance['logintitle']);
+        /** @see WP_Widget::widget */
+        function widget($args, $instance) {     
+            extract( $args );
+            $title = apply_filters('widget_title', $instance['title']);
+            $logintitle = apply_filters('widget_login_title', $instance['logintitle']);
 
             echo $before_widget; 
             if (!is_user_logged_in()) {
@@ -166,29 +166,29 @@
             }
             echo imperial_login_form();
             echo $after_widget;
-		}
+        }
 
-		/** @see WP_Widget::update */
-		function update($new_instance, $old_instance) {				
-			$instance = $old_instance;
-			$instance['title'] = strip_tags($new_instance['title']);
-			$instance['logintitle'] = strip_tags($new_instance['logintitle']);
-			return $instance;
-		}	
+        /** @see WP_Widget::update */
+        function update($new_instance, $old_instance) {             
+            $instance = $old_instance;
+            $instance['title'] = strip_tags($new_instance['title']);
+            $instance['logintitle'] = strip_tags($new_instance['logintitle']);
+            return $instance;
+        }   
 
-		/** @see WP_Widget::form */
-		function form($instance) {				
-			$title = esc_attr($instance['title']);
-			$logintitle = esc_attr($instance['logintitle']);
-			?>
-				<p><label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Form Title:'); ?> <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo $title; ?>" /></label></p>
-				<p><label for="<?php echo $this->get_field_id('logintitle'); ?>"><?php _e('Logged in Title:'); ?> <input class="widefat" id="<?php echo $this->get_field_id('logintitle'); ?>" name="<?php echo $this->get_field_name('logintitle'); ?>" type="text" value="<?php echo $logintitle; ?>" /></label></p>
-			<?php 
-		}
-	} // class imperial_login
-	
-	// register imperial_login widget
-	add_action('widgets_init', create_function('', 'return register_widget("Imperial_Login");'));
+        /** @see WP_Widget::form */
+        function form($instance) {              
+            $title = esc_attr($instance['title']);
+            $logintitle = esc_attr($instance['logintitle']);
+            ?>
+                <p><label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Form Title:'); ?> <input class="widefat" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" type="text" value="<?php echo $title; ?>" /></label></p>
+                <p><label for="<?php echo $this->get_field_id('logintitle'); ?>"><?php _e('Logged in Title:'); ?> <input class="widefat" id="<?php echo $this->get_field_id('logintitle'); ?>" name="<?php echo $this->get_field_name('logintitle'); ?>" type="text" value="<?php echo $logintitle; ?>" /></label></p>
+            <?php 
+        }
+    } // class imperial_login
+    
+    // register imperial_login widget
+    add_action('widgets_init', create_function('', 'return register_widget("Imperial_Login");'));
 
     /*
      * Authentication filter
@@ -249,32 +249,32 @@
         return $user;
     }
 
-	/*
-	 * Creates a new user in wp_users table with given login credentials
-	 * @param 
-	 * user: the username to be created
-	 * pass: the password to be associated with account
-	 * @return
-	 * user_id of created user
-	 */
-	function create_imp_user($user, $pass) {
-		$user_login = esc_sql($user);
-		$user_email = $user."@imperial.ac.uk";
-		$user_pass = $pass;
-		$fullname = ldap_get_name($user);
+    /*
+     * Creates a new user in wp_users table with given login credentials
+     * @param 
+     * user: the username to be created
+     * pass: the password to be associated with account
+     * @return
+     * user_id of created user
+     */
+    function create_imp_user($user, $pass) {
+        $user_login = esc_sql($user);
+        $user_email = $user."@imperial.ac.uk";
+        $user_pass = $pass;
+        $fullname = ldap_get_name($user);
         $user_nicename = $fullname;
         $display_name = $fullname;
         $nickname = $fullname;
-		$fullname = explode(' ', $fullname);
-		$first_name = $fullname[0];
-		$last_name = end($fullname);
-		$description = ldap_get_info($user);
-		$description = imperial_format_description($description);
-		$userdata = compact('user_login', 'user_email', 'user_pass', 'user_nicename', 'display_name', 'nickname', 'first_name', 'last_name', 'description');
-		$user_id = wp_insert_user($userdata);
-		
-		return $user_id;
-	}
+        $fullname = explode(' ', $fullname);
+        $first_name = $fullname[0];
+        $last_name = end($fullname);
+        $description = ldap_get_info($user);
+        $description = imperial_format_description($description);
+        $userdata = compact('user_login', 'user_email', 'user_pass', 'user_nicename', 'display_name', 'nickname', 'first_name', 'last_name', 'description');
+        $user_id = wp_insert_user($userdata);
+        
+        return $user_id;
+    }
 
     /*
      * Stub functions for local development
@@ -304,23 +304,23 @@
         }
     }
 
-	/*
-	 * Helper function to parse the description array obtained via ldap
-	 * @param 
-	 * description: an array obtained through ldap_get_info() function
-	 * @return
-	 * string detailing the course details of person
-	 */
-	function imperial_format_description($description) {
-		$course = $description[0];
-		$student_type = $description[1];
-		$department = $description[2];
-		$degree = $description[3];
-		$location = $description[4];
-		
-		$return_description = $course . "\n" . $student_type . "\n" . $department;
-		return $return_description;
-	}
+    /*
+     * Helper function to parse the description array obtained via ldap
+     * @param 
+     * description: an array obtained through ldap_get_info() function
+     * @return
+     * string detailing the course details of person
+     */
+    function imperial_format_description($description) {
+        $course = $description[0];
+        $student_type = $description[1];
+        $department = $description[2];
+        $degree = $description[3];
+        $location = $description[4];
+        
+        $return_description = $course . "\n" . $student_type . "\n" . $department;
+        return $return_description;
+    }
 
     /*
      * Generate a secure password
